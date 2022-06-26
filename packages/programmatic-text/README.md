@@ -22,7 +22,29 @@
 
 
 
-`programmatic text` allows users to input a `text` with `{variables}` which will be replaced after `evaluation` with the results of the user-input `code`.
+`programmatic text` provides an `evaluation context` to allow users to input a `text` containing `{variables}` which will be replaced after `evaluation` with the results of the user-input `code`.
+
+Considering the following user `text` input
+
+```
+simple {example} with one variable
+```
+
+and the following user `code` input in `javascript`
+
+``` javascript
+const example = 'fake world example';
+
+return {
+    example,
+};
+```
+
+will evaluate to the content
+
+```
+simple fake world example with one variable
+```
 
 
 
@@ -30,6 +52,12 @@
 
 ``` bash
 npm install @plurid/programmatic-text
+```
+
+or
+
+``` bash
+yarn add @plurid/programmatic-text
 ```
 
 
