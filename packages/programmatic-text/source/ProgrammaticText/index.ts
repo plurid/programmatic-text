@@ -137,10 +137,6 @@ class ProgrammaticText {
     private async javascriptValues(
         code: string,
     ) {
-        if (typeof window === 'undefined') {
-            return;
-        }
-
         const safeEval = this.getJavaScriptEval();
         const values: any = await safeEval(code);
         return values;
@@ -148,10 +144,6 @@ class ProgrammaticText {
 
 
     private async loadPyodide() {
-        if (typeof window === 'undefined') {
-            return;
-        }
-
         if ((window as any).programmaticTextPyodide) {
             return (window as any).programmaticTextPyodide;
         }
@@ -185,6 +177,10 @@ class ProgrammaticText {
     private async getValues(
         code: string,
     ) {
+        if (typeof window === 'undefined') {
+            return;
+        }
+
         if (this.options.evaluationLanguage === 'python') {
             return this.pythonValues(code);
         }
