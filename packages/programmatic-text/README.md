@@ -160,6 +160,18 @@ interface ProgrammaticTextOptions {
 
 
 
+## Packages
+
+<a target="_blank" href="https://www.npmjs.com/package/@plurid/programmatic-text">
+    <img src="https://img.shields.io/npm/v/@plurid/programmatic-text.svg?logo=npm&colorB=1380C3&style=for-the-badge" alt="Version">
+</a>
+
+[@plurid/programmatic-text][programmatic-text]
+
+[programmatic-text]: https://github.com/plurid/programmatic-text/tree/master/packages/programmatic-text
+
+
+
 ## [Codeophon](https://github.com/ly3xqhl8g9/codeophon)
 
 + licensing: [delicense](https://github.com/ly3xqhl8g9/delicense)
