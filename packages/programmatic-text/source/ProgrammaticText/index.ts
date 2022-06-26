@@ -24,6 +24,7 @@ class ProgrammaticText {
     }
 
 
+    // #region private
     #resolveOptions(
         options?: Partial<ProgrammaticTextOptions>,
     ): ProgrammaticTextOptions {
@@ -253,8 +254,11 @@ class ProgrammaticText {
             this.#options.logger(error);
         }
     }
+    // #endregion private
 
 
+
+    // #region public
     public async evaluate(
         text: string,
         code: string,
@@ -281,6 +285,7 @@ class ProgrammaticText {
             return;
         }
     }
+    // #endregion public
 }
 // #endregion module
 
