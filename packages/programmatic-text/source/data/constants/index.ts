@@ -10,9 +10,9 @@
 
 // #region module
 export const DEFAULTS: ProgrammaticTextOptions = {
-    timeout: 2_500,
-    evaluationType: 'function',
     evaluationLanguage: 'javascript',
+    evaluationType: 'function',
+    timeout: 2_500,
     replaceUndefined: undefined,
     errorKey: '__error__',
     logger: undefined,

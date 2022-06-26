@@ -28,9 +28,9 @@ class ProgrammaticText {
         options?: Partial<ProgrammaticTextOptions>,
     ): ProgrammaticTextOptions {
         return {
-            timeout: options?.timeout ?? DEFAULTS.timeout,
-            evaluationType: options?.evaluationType || DEFAULTS.evaluationType,
             evaluationLanguage: options?.evaluationLanguage || DEFAULTS.evaluationLanguage,
+            evaluationType: options?.evaluationType || DEFAULTS.evaluationType,
+            timeout: options?.timeout ?? DEFAULTS.timeout,
             replaceUndefined: options?.replaceUndefined || DEFAULTS.replaceUndefined,
             errorKey: options?.errorKey ?? DEFAULTS.errorKey,
             logger: options?.logger || DEFAULTS.logger,
