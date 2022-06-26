@@ -1,0 +1,67 @@
+{
+    "name": "@plurid/programmatic-text",
+    "version": "0.0.0-0",
+    "description": "Client-Side Compute Over User Text",
+    "keywords": [
+        "programmatic-text"
+    ],
+    "author": "ly3xqhl8g9 <ly3xqhl8g9@plurid.com> (https://plurid.com)",
+    "license": "SEE LICENSE IN LICENSE",
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/plurid/programmatic-text"
+    },
+    "bugs": {
+        "email": "source@plurid.com",
+        "url": "https://github.com/plurid/programmatic-text/issues"
+    },
+    "homepage": "https://github.com/plurid/programmatic-text/blob/master/packages/programmatic-text/README.md",
+    "publishConfig": {
+        "registry": "https://registry.npmjs.org/",
+        "access": "public"
+    },
+    "engines": {
+        "node": ">=12",
+        "npm": ">=6"
+    },
+    "main": "./distribution/index.js",
+    "typings": "./distribution/index.d.ts",
+    "files": [
+        "distribution"
+    ],
+    "scripts": {
+        "test": "jest -c ./configurations/jest.config.js --coverage ./source",
+        "start": "rollup -c ./scripts/rollup.config.ts -w",
+        "build.removeTests": "rm -rf `find ./distribution/ -type d -name __tests__`",
+        "build.types": "ttsc --emitDeclarationOnly",
+        "build.development": "rollup -c ./scripts/rollup.config.ts",
+        "build.production": "rollup -c ./scripts/rollup.config.ts",
+        "build": "pnpm build.production && pnpm build.types && pnpm build.removeTests",
+        "prebuild": "rm -rf distribution",
+        "prepublishOnly": "pnpm build"
+    },
+    "peerDependencies": {
+        "pyodide": "^0.20.0"
+    },
+    "devDependencies": {
+        "@types/jest": "^28.1.3",
+        "@types/node": "^18.0.0",
+        "@typescript-eslint/eslint-plugin": "^5.29.0",
+        "@typescript-eslint/parser": "^5.29.0",
+        "@zerollup/ts-transform-paths": "^1.7.18",
+        "error-stack-parser": "^2.1.4",
+        "eslint": "^8.18.0",
+        "jest": "^28.1.1",
+        "jest-config": "^28.1.1",
+        "pyodide": "^0.20.0",
+        "rollup": "^2.75.7",
+        "rollup-plugin-terser": "^7.0.2",
+        "rollup-plugin-typescript2": "^0.32.1",
+        "ts-jest": "^28.0.5",
+        "ts-node": "^10.8.1",
+        "tslib": "^2.4.0",
+        "ttypescript": "^1.5.13",
+        "typescript": "^4.7.4",
+        "typescript-transform-paths": "^3.3.1"
+    }
+}
