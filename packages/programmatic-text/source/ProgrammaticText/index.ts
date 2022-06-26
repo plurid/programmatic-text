@@ -3,6 +3,10 @@
     import {
         ProgrammaticTextOptions,
     } from '~data/interfaces';
+
+    import {
+        DEFAULTS,
+    } from '~data/constants';
     // #endregion external
 // #endregion imports
 
@@ -24,11 +28,12 @@ class ProgrammaticText {
         options?: Partial<ProgrammaticTextOptions>,
     ): ProgrammaticTextOptions {
         return {
-            timeout: options?.timeout ?? 2_500,
-            evaluationType: options?.evaluationType || 'function',
-            evaluationLanguage: options?.evaluationLanguage || 'javascript',
-            replaceUndefined: options?.replaceUndefined || undefined,
-            logger: options?.logger || undefined,
+            timeout: options?.timeout ?? DEFAULTS.timeout,
+            evaluationType: options?.evaluationType || DEFAULTS.evaluationType,
+            evaluationLanguage: options?.evaluationLanguage || DEFAULTS.evaluationLanguage,
+            replaceUndefined: options?.replaceUndefined || DEFAULTS.replaceUndefined,
+            errorKey: options?.errorKey ?? DEFAULTS.errorKey,
+            logger: options?.logger || DEFAULTS.logger,
         };
     }
 
@@ -77,8 +82,9 @@ class ProgrammaticText {
 
                             _addEventListener('message', function (e) {
                                 const {
-                                    type,
                                     code,
+                                    type,
+                                    errorKey,
                                 } = e.data;
 
                                 if (type === 'function') {
@@ -88,7 +94,7 @@ class ProgrammaticText {
                                             ${code}
                                         } catch (e) {
                                             return {
-                                                __error__: e.message,
+                                                ${errorKey}: e.message,
                                             };
                                         }`,
                                     );
@@ -108,18 +114,21 @@ class ProgrammaticText {
 
                 URL.revokeObjectURL(blobURL);
 
-                worker.onmessage = function (evt) {
+                worker.onmessage = function (event) {
                     worker.terminate();
-                    resolve(evt.data);
+                    resolve(event.data);
                 };
 
-                worker.onerror = function (evt) {
-                    reject(new Error(evt.message));
+                worker.onerror = function (event) {
+                    reject(
+                        new Error(event.message,
+                    ));
                 };
 
                 worker.postMessage({
-                    type: this.options.evaluationType,
                     code: untrustedCode,
+                    type: this.options.evaluationType,
+                    errorKey: this.options.errorKey,
                 });
 
                 setTimeout(
@@ -234,6 +243,15 @@ class ProgrammaticText {
     }
 
 
+    private logError(
+        error: any,
+    ) {
+        if (this.options.logger) {
+            this.options.logger(error);
+        }
+    }
+
+
     public async evaluate(
         text: string,
         code: string,
@@ -242,15 +260,20 @@ class ProgrammaticText {
             const variables = this.getVariables(text);
             const values = await this.getValues(code);
 
+            const error = values[this.options.errorKey];
+            if (error) {
+                this.logError(error);
+
+                return;
+            }
+
             return this.replaceVariables(
                 text,
                 variables,
                 values,
             );
         } catch (error: any) {
-            if (this.options.logger) {
-                this.options.logger(error);
-            }
+            this.logError(error);
 
             return;
         }
