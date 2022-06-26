@@ -139,7 +139,8 @@ class ProgrammaticText {
         code: string,
     ) {
         const safeEval = this.getJavaScriptEval();
-        const values: any = await safeEval(code);
+        const values: any = await safeEval(code) || {};
+
         return values;
     }
 
@@ -169,7 +170,7 @@ class ProgrammaticText {
 
         const values = Object.fromEntries(
             (await pyodide.globals.get('values')).toJs(),
-        );
+        ) || {};
 
         return values;
     }
@@ -177,9 +178,9 @@ class ProgrammaticText {
 
     private async getValues(
         code: string,
-    ) {
+    ): Promise<Record<string, string | number | boolean>> {
         if (typeof window === 'undefined') {
-            return;
+            return {};
         }
 
         if (this.options.evaluationLanguage === 'python') {
@@ -208,7 +209,7 @@ class ProgrammaticText {
     private replaceVariables(
         text: string,
         variables: Set<string>,
-        values: any,
+        values: Record<string, string | number | boolean>,
     ) {
         let programmaticText = text;
 
@@ -223,7 +224,10 @@ class ProgrammaticText {
                 continue;
             }
 
-            programmaticText = programmaticText.replace(replaceRE, value);
+            programmaticText = programmaticText.replace(
+                replaceRE,
+                value + '', // FORCE cast to string
+            );
         }
 
         return programmaticText;
@@ -236,7 +240,7 @@ class ProgrammaticText {
     ) {
         try {
             const variables = this.getVariables(text);
-            const values: any = await this.getValues(code);
+            const values = await this.getValues(code);
 
             return this.replaceVariables(
                 text,
