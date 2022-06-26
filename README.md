@@ -33,56 +33,103 @@ npm install @plurid/programmatic-text
 ```
 
 
+
 ## Usage
 
-``` typescript
-import ProgrammaticText from '@plurid/programmatic-text';
-
-
-const programmaticText = new ProgrammaticText();
-
-const evaluated = await programmaticText.evaluate(
-    // text
-    'This happened {x} years ago, that means {y} days ago.',
-    // code
-    `
-    const x = new Date().getFullYear() - 2000;
-    const y = x * 365;
-
-    return {
-        x,
-        y,
-    };
-    `,
-));
-```
-
+The evaluation language by default is `javascript`
 
 ``` typescript
 import ProgrammaticText from '@plurid/programmatic-text';
 
 
-const programmaticText = new ProgrammaticText({
-    evaluationLanguage: 'python',
-});
+const main = async () => {
+    const programmaticText = new ProgrammaticText();
 
-const evaluated = await programmaticText.evaluate(
-    // text
-    'This happened {x} years ago, that means {y} days ago.',
-    // code
-    `
-    from datetime import date
+    const evaluated = await programmaticText.evaluate(
+        // text
+        'This happened {x} years ago, that means {y} days ago.',
+        // code
+        `
+        const x = new Date().getFullYear() - 2000;
+        const y = x * 365;
 
-    x = date.today().year - 2000;
-    y = x * 365;
-
-    values = {
-        "x": x,
-        "y": y,
-    }
-    `,
-));
+        return {
+            x,
+            y,
+        };
+        `,
+    ));
+}
 ```
+
+and it can also be `python`
+
+``` typescript
+import ProgrammaticText from '@plurid/programmatic-text';
+
+
+const main = async () => {
+    // preload pyodide before using ProgrammaticText
+    const pyodide = await loadPyodide();
+    window.programmaticTextPyodide = pyodide;
+
+
+    const programmaticText = new ProgrammaticText({
+        evaluationLanguage: 'python',
+    });
+
+    const evaluated = await programmaticText.evaluate(
+        // text
+        'This happened {x} years ago, that means {y} days ago.',
+        // code
+        `
+        from datetime import date
+
+        x = date.today().year - 2000;
+        y = x * 365;
+
+        values = {
+            "x": x,
+            "y": y,
+        }
+        `,
+    ));
+}
+```
+
+
+### Constructor Options
+
+``` typescript
+interface ProgrammaticTextOptions {
+    evaluationLanguage: 'javascript' | 'python';
+
+    /**
+     * Used when `evaluationLanguage` is `javascript`.
+     */
+    evaluationType: 'function' | 'variable';
+
+    /**
+     * Timeout for the code evaluation.
+     */
+    timeout: number;
+
+    /**
+     * Replace undefined variables with a certain string.
+     */
+    replaceUndefined: string | undefined;
+
+    /**
+     * Catch errors from the evaluation of the code.
+     *
+     * Default `__error__`
+     */
+    errorKey: string;
+
+    logger: ((error: any) => void) | undefined;
+}
+```
+
 
 
 ## [Codeophon](https://github.com/ly3xqhl8g9/codeophon)
