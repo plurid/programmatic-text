@@ -3,32 +3,41 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>programmatic text python</title>
     <style>
         html, body {
-            background-color: black;
+            background: black;
             color: white;
         }
     </style>
+    <script src="https://cdn.jsdelivr.net/pyodide/v0.20.0/full/pyodide.js"></script>
 </head>
 <body>
     <script type="module" src="./distribution/index.js"></script>
     <script type="module">
         const main = async () => {
-            const programmaticText = new window.ProgrammaticText();
+            const pyodide = await loadPyodide();
+            window.programmaticTextPyodide = pyodide;
+
+            const programmaticText = new window.ProgrammaticText({
+                evaluationLanguage: 'python',
+                logger: console.log,
+            });
 
             const evaluated = (await programmaticText.evaluate(
                 `
                 This happened {x} years ago, that means {y} days ago.
                 `,
                 `
-                const x = new Date().getFullYear() - 2000;
-                const y = x * 365;
+                from datetime import date
 
-                return {
-                    x,
-                    y,
-                };
+                x = date.today().year - 2000;
+                y = x * 365;
+
+                values = {
+                    "x": x,
+                    "y": y,
+                }
                 `,
             )).trim();
 
