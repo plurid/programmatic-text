@@ -4,5 +4,7 @@ export interface ProgrammaticTextOptions {
     evaluationType?: 'function' | 'variable';
     evaluationLanguage?: 'javascript' | 'python';
     replaceUndefined?: string | undefined;
+
+    logger?: (error: any) => void | undefined;
 }
 // #endregion module

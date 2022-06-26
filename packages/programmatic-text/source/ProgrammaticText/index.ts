@@ -28,6 +28,7 @@ class ProgrammaticText {
             evaluationType: options?.evaluationType || 'function',
             evaluationLanguage: options?.evaluationLanguage || 'javascript',
             replaceUndefined: options?.replaceUndefined || undefined,
+            logger: options?.logger || undefined,
         };
     }
 
@@ -242,7 +243,11 @@ class ProgrammaticText {
                 variables,
                 values,
             );
-        } catch (error) {
+        } catch (error: any) {
+            if (this.options.logger) {
+                this.options.logger(error);
+            }
+
             return;
         }
     }
