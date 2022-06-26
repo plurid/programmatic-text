@@ -27,6 +27,7 @@ class ProgrammaticText {
             timeout: options?.timeout ?? 2_500,
             evaluationType: options?.evaluationType || 'function',
             evaluationLanguage: options?.evaluationLanguage || 'javascript',
+            replaceUndefined: options?.replaceUndefined || undefined,
         };
     }
 
@@ -136,6 +137,10 @@ class ProgrammaticText {
     private async javascriptValues(
         code: string,
     ) {
+        if (typeof window === 'undefined') {
+            return;
+        }
+
         const safeEval = this.getJavaScriptEval();
         const values: any = await safeEval(code);
         return values;
@@ -152,7 +157,7 @@ class ProgrammaticText {
         }
 
         /**
-         * HACK prevent rollup bundling.
+         * HACK to prevent rollup bundling.
          */
         const packageName = 'pyodide/pyodide.js';
         const pyodidePackage = await import(packageName);
@@ -188,37 +193,61 @@ class ProgrammaticText {
     }
 
 
+    private getVariables(
+        text: string,
+    ) {
+        const variableRE = /\{(\w+)\}/gi;
+        const variablesMatch = text.matchAll(variableRE);
+        const variables = new Set<string>();
+
+        for (const match of variablesMatch) {
+            const variableName = match[1];
+            variables.add(variableName);
+        }
+
+        return variables;
+    }
+
+    private replaceVariables(
+        text: string,
+        variables: Set<string>,
+        values: any,
+    ) {
+        let programmaticText = text;
+
+        for (const variable of variables) {
+            const replaceRE = new RegExp(`\{${variable}\}`, 'g');
+            const value = values[variable];
+
+            if (typeof value === 'undefined') {
+                if (typeof this.options.replaceUndefined === 'string') {
+                    programmaticText = programmaticText.replace(replaceRE, this.options.replaceUndefined);
+                }
+                continue;
+            }
+
+            programmaticText = programmaticText.replace(replaceRE, value);
+        }
+
+        return programmaticText;
+    }
+
+
     public async evaluate(
         text: string,
         code: string,
     ) {
         try {
+            const variables = this.getVariables(text);
             const values: any = await this.getValues(code);
 
-            const variableRE = /\{(\w+)\}/gi;
-            const variablesMatch = text.matchAll(variableRE);
-            const variables = new Set<string>();
-
-            for (const match of variablesMatch) {
-                const variableName = match[1];
-                variables.add(variableName);
-            }
-
-            let programmaticText = text;
-
-            for (const variable of variables) {
-                const value = values[variable];
-                if (typeof value === 'undefined') {
-                    continue;
-                }
-
-                const replaceRE = new RegExp(`\{${variable}\}`, 'g');
-                programmaticText.replace(replaceRE, value);
-            }
-
-            return programmaticText;
+            return this.replaceVariables(
+                text,
+                variables,
+                values,
+            );
         } catch (error) {
-            return text;
+            return;
         }
     }
 }
