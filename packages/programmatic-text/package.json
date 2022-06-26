@@ -1,7 +1,7 @@
 {
     "name": "@plurid/programmatic-text",
     "version": "0.0.0-0",
-    "description": "Client-Side Compute Over User Text",
+    "description": "Client-Side Evaluation of User Text Based on User Code",
     "keywords": [
         "programmatic-text"
     ],

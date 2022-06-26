@@ -17,7 +17,7 @@
 
 
 <h3 align="center">
-    Client-Side Compute Over User Text
+    Client-Side Evaluation of User Text Based on User Code
 </h3>
 
 
