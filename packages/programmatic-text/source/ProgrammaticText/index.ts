@@ -14,17 +14,17 @@
 
 // #region module
 class ProgrammaticText {
-    private options: ProgrammaticTextOptions;
+    #options: ProgrammaticTextOptions;
 
 
     constructor(
         options?: Partial<ProgrammaticTextOptions>,
     ) {
-        this.options = this.resolveOptions(options);
+        this.#options = this.#resolveOptions(options);
     }
 
 
-    private resolveOptions(
+    #resolveOptions(
         options?: Partial<ProgrammaticTextOptions>,
     ): ProgrammaticTextOptions {
         return {
@@ -38,7 +38,7 @@ class ProgrammaticText {
     }
 
 
-    private getJavaScriptEval() {
+    #getJavaScriptEval() {
         /**
          * https://stackoverflow.com/a/37154736
          *
@@ -127,8 +127,8 @@ class ProgrammaticText {
 
                 worker.postMessage({
                     code: untrustedCode,
-                    type: this.options.evaluationType,
-                    errorKey: this.options.errorKey,
+                    type: this.#options.evaluationType,
+                    errorKey: this.#options.errorKey,
                 });
 
                 setTimeout(
@@ -136,7 +136,7 @@ class ProgrammaticText {
                         worker.terminate();
                         reject(new Error('The worker timed out.'));
                     },
-                    this.options.timeout,
+                    this.#options.timeout,
                 );
             });
         }
@@ -144,17 +144,17 @@ class ProgrammaticText {
         return safeEval;
     }
 
-    private async javascriptValues(
+    async #javascriptValues(
         code: string,
     ) {
-        const safeEval = this.getJavaScriptEval();
+        const safeEval = this.#getJavaScriptEval();
         const values: any = await safeEval(code) || {};
 
         return values;
     }
 
 
-    private async loadPyodide() {
+    async #loadPyodide() {
         if ((window as any).programmaticTextPyodide) {
             return (window as any).programmaticTextPyodide;
         }
@@ -170,10 +170,10 @@ class ProgrammaticText {
         return pyodide;
     }
 
-    private async pythonValues(
+    async #pythonValues(
         code: string,
     ) {
-        const pyodide = await this.loadPyodide();
+        const pyodide = await this.#loadPyodide();
 
         pyodide.runPython(code);
 
@@ -185,22 +185,22 @@ class ProgrammaticText {
     }
 
 
-    private async getValues(
+    async #getValues(
         code: string,
     ): Promise<Record<string, string | number | boolean>> {
         if (typeof window === 'undefined') {
             return {};
         }
 
-        if (this.options.evaluationLanguage === 'python') {
-            return this.pythonValues(code);
+        if (this.#options.evaluationLanguage === 'python') {
+            return this.#pythonValues(code);
         }
 
-        return this.javascriptValues(code);
+        return this.#javascriptValues(code);
     }
 
 
-    private getVariables(
+    #getVariables(
         text: string,
     ) {
         const variableRE = /\{(\w+)\}/gi;
@@ -215,7 +215,7 @@ class ProgrammaticText {
         return variables;
     }
 
-    private replaceVariables(
+    #replaceVariables(
         text: string,
         variables: Set<string>,
         values: Record<string, string | number | boolean>,
@@ -227,8 +227,11 @@ class ProgrammaticText {
             const value = values[variable];
 
             if (typeof value === 'undefined') {
-                if (typeof this.options.replaceUndefined === 'string') {
-                    programmaticText = programmaticText.replace(replaceRE, this.options.replaceUndefined);
+                if (typeof this.#options.replaceUndefined === 'string') {
+                    programmaticText = programmaticText.replace(
+                        replaceRE,
+                        this.#options.replaceUndefined,
+                    );
                 }
                 continue;
             }
@@ -243,11 +246,11 @@ class ProgrammaticText {
     }
 
 
-    private logError(
+    #logError(
         error: any,
     ) {
-        if (this.options.logger) {
-            this.options.logger(error);
+        if (this.#options.logger) {
+            this.#options.logger(error);
         }
     }
 
@@ -257,23 +260,23 @@ class ProgrammaticText {
         code: string,
     ) {
         try {
-            const variables = this.getVariables(text);
-            const values = await this.getValues(code);
+            const variables = this.#getVariables(text);
+            const values = await this.#getValues(code);
 
-            const error = values[this.options.errorKey];
+            const error = values[this.#options.errorKey];
             if (error) {
-                this.logError(error);
+                this.#logError(error);
 
                 return;
             }
 
-            return this.replaceVariables(
+            return this.#replaceVariables(
                 text,
                 variables,
                 values,
             );
         } catch (error: any) {
-            this.logError(error);
+            this.#logError(error);
 
             return;
         }
