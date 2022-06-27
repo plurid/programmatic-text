@@ -117,8 +117,8 @@ const main = async () => {
         y = x * 365;
 
         values = {
-            "x": x,
-            "y": y,
+            'x': x,
+            'y': y,
         }
         `,
     ));
