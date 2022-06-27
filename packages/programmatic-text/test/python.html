@@ -10,17 +10,18 @@
             color: white;
         }
     </style>
-    <script src="https://cdn.jsdelivr.net/pyodide/v0.20.0/full/pyodide.js"></script>
+    <!-- <script src="https://cdn.jsdelivr.net/pyodide/v0.20.0/full/pyodide.js"></script> -->
 </head>
 <body>
     <script type="module" src="./distribution/index.js"></script>
     <script type="module">
         const main = async () => {
-            const pyodide = await loadPyodide();
-            window.programmaticTextPyodide = pyodide;
+            // const pyodide = await loadPyodide();
+            // window.programmaticTextPyodide = pyodide;
 
             const programmaticText = new window.ProgrammaticText({
                 language: 'python',
+                // usePyodideCDN: true,
                 logger: console.log,
             });
 
