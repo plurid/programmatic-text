@@ -178,8 +178,9 @@ class ProgrammaticText {
 
         pyodide.runPython(code);
 
+        const valuesKey = 'values';
         const values = Object.fromEntries(
-            (await pyodide.globals.get('values')).toJs(),
+            (await pyodide.globals.get(valuesKey)).toJs(),
         ) || {};
 
         return values;
