@@ -6,6 +6,7 @@
 
     import {
         DEFAULTS,
+        languages,
     } from '~data/constants';
     // #endregion external
 // #endregion imports
@@ -29,8 +30,8 @@ class ProgrammaticText {
         options?: Partial<ProgrammaticTextOptions>,
     ): ProgrammaticTextOptions {
         return {
-            evaluationLanguage: options?.evaluationLanguage || DEFAULTS.evaluationLanguage,
-            evaluationType: options?.evaluationType || DEFAULTS.evaluationType,
+            language: options?.language || DEFAULTS.language,
+            type: options?.type || DEFAULTS.type,
             timeout: options?.timeout ?? DEFAULTS.timeout,
             replaceUndefined: options?.replaceUndefined || DEFAULTS.replaceUndefined,
             errorKey: options?.errorKey ?? DEFAULTS.errorKey,
@@ -128,7 +129,7 @@ class ProgrammaticText {
 
                 worker.postMessage({
                     code: untrustedCode,
-                    type: this.#options.evaluationType,
+                    type: this.#options.type,
                     errorKey: this.#options.errorKey,
                 });
 
@@ -194,7 +195,7 @@ class ProgrammaticText {
             return {};
         }
 
-        if (this.#options.evaluationLanguage === 'python') {
+        if (this.#options.language === languages.python) {
             return this.#pythonValues(code);
         }
 

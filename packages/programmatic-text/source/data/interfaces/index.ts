@@ -1,11 +1,17 @@
 // #region module
+export type ProgrammaticTextLanguage = 'javascript' | 'python';
+
+
 export interface ProgrammaticTextOptions {
-    evaluationLanguage: 'javascript' | 'python';
+    /**
+     * The evaluation language.
+     */
+    language: ProgrammaticTextLanguage;
 
     /**
-     * Used when `evaluationLanguage` is `javascript`.
+     * The evaluation type when `language` is `javascript`.
      */
-    evaluationType: 'function' | 'variable';
+    type: 'function' | 'variable';
 
     /**
      * Timeout for the code evaluation.
