@@ -124,7 +124,9 @@ For `javascript` the `code` must simply return an object where the keys are the 
 
 For `python` the `code` must contain a `values` dictionary which will be used to resolve the `text`.
 
-For `python`, `ProgrammaticText` will load at the first `evaluate` request the `pyodide` package from a CDN script. Setting `usePyodideCDN: false` requires `pyodide` to be preloaded on `window.programmaticTextPyodide`, otherwise `ProgrammaticText` will attempt to dynamically import the `pyodide` package from `node_modules`.
+For `python`, `ProgrammaticText` will load at the first `evaluate` request or at the `preload` call the `pyodide` package from a CDN script.
+
+Setting `usePyodideCDN: false` requires `pyodide` to be preloaded on `window.programmaticTextPyodide`, otherwise `ProgrammaticText` will attempt to dynamically import the `pyodide` package from `node_modules`.
 
 ``` typescript
 // preload pyodide before using ProgrammaticText
@@ -135,6 +137,16 @@ const programmaticText = new ProgrammaticText({
     language: 'python',
     usePyodideCDN: false,
 });
+```
+
+or
+
+``` typescript
+const programmaticText = new ProgrammaticText({
+    language: 'python',
+    usePyodideCDN: true, // default for `python`
+});
+await programmaticText.preload();
 ```
 
 
