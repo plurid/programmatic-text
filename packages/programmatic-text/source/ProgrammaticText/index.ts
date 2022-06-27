@@ -353,6 +353,10 @@ class ProgrammaticText {
             return;
         }
     }
+
+    public async preload() {
+        await this.#loadPyodide();
+    }
     // #endregion public
 }
 // #endregion module
