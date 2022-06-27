@@ -97,11 +97,6 @@ import ProgrammaticText from '@plurid/programmatic-text';
 
 
 const main = async () => {
-    // preload pyodide before using ProgrammaticText
-    const pyodide = await loadPyodide();
-    window.programmaticTextPyodide = pyodide;
-
-
     const programmaticText = new ProgrammaticText({
         language: 'python',
     });
@@ -128,6 +123,19 @@ const main = async () => {
 For `javascript` the `code` must simply return an object where the keys are the variable names from the `text`.
 
 For `python` the `code` must contain a `values` dictionary which will be used to resolve the `text`.
+
+For `python`, `ProgrammaticText` will load at the first `evaluate` request the `pyodide` package from a CDN script. Setting `usePyodideCDN: false` requires `pyodide` to be preloaded on `window.programmaticTextPyodide`, otherwise `ProgrammaticText` will attempt to dynamically import the `pyodide` package from `node_modules`.
+
+``` typescript
+// preload pyodide before using ProgrammaticText
+const pyodide = await loadPyodide();
+window.programmaticTextPyodide = pyodide;
+
+const programmaticText = new ProgrammaticText({
+    language: 'python',
+    usePyodideCDN: false,
+});
+```
 
 
 
