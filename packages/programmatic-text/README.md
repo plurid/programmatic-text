@@ -64,7 +64,7 @@ yarn add @plurid/programmatic-text
 
 ## Usage
 
-The evaluation language by default is `javascript`
+The evaluation language of the `code` is by default `javascript`
 
 ``` typescript
 import ProgrammaticText from '@plurid/programmatic-text';
@@ -103,7 +103,7 @@ const main = async () => {
 
 
     const programmaticText = new ProgrammaticText({
-        evaluationLanguage: 'python',
+        language: 'python',
     });
 
     const evaluated = await programmaticText.evaluate(
@@ -135,12 +135,15 @@ For `python` the `code` must contain a `values` dictionary which will be used to
 
 ``` typescript
 interface ProgrammaticTextOptions {
-    evaluationLanguage: 'javascript' | 'python';
+    /**
+     * The evaluation language.
+     */
+    language: 'javascript' | 'python';
 
     /**
      * Used when `evaluationLanguage` is `javascript`.
      */
-    evaluationType: 'function' | 'variable';
+    type: 'function' | 'variable';
 
     /**
      * Timeout for the code evaluation.
