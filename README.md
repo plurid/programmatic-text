@@ -125,6 +125,11 @@ const main = async () => {
 }
 ```
 
+For `javascript` the `code` must simply return an object where the keys are the variable names from the `text`.
+
+For `python` the `code` must contain a `values` dictionary which will be used to resolve the `text`.
+
+
 
 ### Constructor Options
 
