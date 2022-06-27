@@ -14,6 +14,13 @@ export interface ProgrammaticTextOptions {
     type: 'function' | 'variable';
 
     /**
+     * Load `pyodide` for `python` from CDN.
+     *
+     * Default `true`
+     */
+    usePyodideCDN: boolean;
+
+    /**
      * Timeout for the code evaluation.
      */
     timeout: number;

@@ -13,6 +13,7 @@
 export const DEFAULTS: ProgrammaticTextOptions = {
     language: 'javascript',
     type: 'function',
+    usePyodideCDN: true,
     timeout: 2_500,
     replaceUndefined: undefined,
     errorKey: '__error__',
@@ -24,4 +25,7 @@ export const languages: Record<ProgrammaticTextLanguage, ProgrammaticTextLanguag
     javascript: 'javascript',
     python: 'python',
 };
+
+
+export const pyodideCDN = 'https://cdn.jsdelivr.net/pyodide/v0.20.0/full/pyodide.js';
 // #endregion module

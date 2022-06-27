@@ -7,7 +7,12 @@
     import {
         DEFAULTS,
         languages,
+        pyodideCDN,
     } from '~data/constants';
+
+    import {
+        wait,
+    } from '~services/utilities';
     // #endregion external
 // #endregion imports
 
@@ -16,6 +21,10 @@
 // #region module
 class ProgrammaticText {
     #options: ProgrammaticTextOptions;
+    #pyodide = {
+        loading: false,
+        loaded: false,
+    };
 
 
     constructor(
@@ -32,6 +41,7 @@ class ProgrammaticText {
         return {
             language: options?.language || DEFAULTS.language,
             type: options?.type || DEFAULTS.type,
+            usePyodideCDN: options?.usePyodideCDN ?? DEFAULTS.usePyodideCDN,
             timeout: options?.timeout ?? DEFAULTS.timeout,
             replaceUndefined: options?.replaceUndefined || DEFAULTS.replaceUndefined,
             errorKey: options?.errorKey ?? DEFAULTS.errorKey,
@@ -161,6 +171,37 @@ class ProgrammaticText {
             return (window as any).programmaticTextPyodide;
         }
 
+
+        if (this.#options.usePyodideCDN) {
+            const script = document.createElement('script');
+            script.src = pyodideCDN;
+            document.head.appendChild(script);
+
+            this.#pyodide.loading = true;
+
+            const pyodide = await new Promise ((resolve, reject) => {
+                script.onload = async () => {
+                    const pyodide = await (window as any).loadPyodide();
+                    (window as any).programmaticTextPyodide = pyodide;
+
+                    this.#pyodide.loading = false;
+                    this.#pyodide.loaded = true;
+                    resolve(pyodide);
+                }
+
+                script.onerror = () => {
+                    this.#pyodide.loading = false;
+                    this.#pyodide.loaded = false;
+                    reject();
+                }
+            });
+
+            return pyodide;
+        }
+
+
+        this.#pyodide.loading = true;
+
         /**
          * HACK to prevent rollup bundling.
          */
@@ -169,12 +210,37 @@ class ProgrammaticText {
         const pyodide = await pyodidePackage.loadPyodide();
         (window as any).programmaticTextPyodide = pyodide;
 
+        this.#pyodide.loading = false;
+        this.#pyodide.loaded = true;
+
         return pyodide;
+    }
+
+    /**
+     * Wait for pyodide to load if loading.
+     */
+    async #checkPyodide() {
+        if (this.#pyodide.loading && !this.#pyodide.loaded) {
+            const triesLimit = 11;
+            const tryTime = 2_500;
+            let tries = 0;
+
+            while (tries < triesLimit) {
+                await wait(tryTime);
+                tries += 1;
+
+                if (this.#pyodide.loaded) {
+                    break;
+                }
+            }
+        }
     }
 
     async #pythonValues(
         code: string,
     ) {
+        await this.#checkPyodide();
+
         const pyodide = await this.#loadPyodide();
 
         pyodide.runPython(code);
