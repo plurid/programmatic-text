@@ -141,7 +141,7 @@ interface ProgrammaticTextOptions {
     language: 'javascript' | 'python';
 
     /**
-     * Used when `evaluationLanguage` is `javascript`.
+     * The evaluation type when `language` is `javascript`.
      */
     type: 'function' | 'variable';
 
